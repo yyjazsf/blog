@@ -1,0 +1,1 @@
+scp -r .vuepress/dist/* root@10.10.10.10:/root/data/wwwroot/home.yingyj.com
