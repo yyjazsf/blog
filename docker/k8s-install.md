@@ -49,10 +49,13 @@ add-apt-repository "deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xe
 # 更新源并安装最新版 kubenetes
 sudo apt update && apt install -y kubelet kubeadm kubectl
 
+
 nano ~/.zshrc
-# 添加 completion，最好放入 .bashrc 中
-source <(kubectl completion bash)
-source <(kubeadm completion bash)
+# 添加 completion，最好放入 .zshrc 中
+source <(kubectl completion zsh)
+source <(kubeadm completion zsh)
+alias k=kubectl
+compdef __start_kubectl k
 ```
 
 ## init master node
@@ -85,7 +88,13 @@ use [calico](https://projectcalico.docs.tigera.io/getting-started/kubernetes/qui
 
 ## add work node
 
+[create-cluster-kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
+
 if only have one machine， maybe you want to use master node to work
+```bash
+# 允许 master 节点调度 Pod
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
 
 ```bash
 # 获取 work join 的 token
@@ -100,4 +109,10 @@ kubeadm join `replace this master IP`:6443 \
 --token `replace this token` \
 --discovery-token-ca-cert-hash \
 `replace this ca cert hash`
+```
+
+## install ingress-nginx
+```bash
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml
+wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml
 ```
