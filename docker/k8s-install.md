@@ -1,8 +1,23 @@
 ## k8s install
 
-Optimize for China mainland users
+`createDate: 2022/01/12`
 
-system: ubuntu 20  
+Optimize for China mainland users(默认使用国内镜像)
+
+system: ubuntu 20
+
+## 设置代理（建议）
+```bash
+apt install privoxy
+
+nano ~/.zshrc
+alias proxy="export HTTP_PROXY=http://127.0.0.1:8118;export HTTPS_PROXY=http://127.0.0.1:8118;export FTP_PROXY=http://127.0.0.1:8118;export NO_PROXY=localhost,127.0.0.0,127.0.1.1,127.0.1.1,10.0.0.0/8,192.168.0.0/16,mirrors.aliyun.com,registry.aliyuncs.com;"
+
+```
+
+`docker proxy（建议）`
+
+- [docker pull proxy](https://docs.docker.com/config/daemon/systemd/#httphttps-proxy)
 
 ## install docker
 
@@ -48,7 +63,8 @@ add-apt-repository "deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xe
 
 # 更新源并安装最新版 kubenetes
 sudo apt update && apt install -y kubelet kubeadm kubectl
-
+# 锁定版本 kubelet kubeadm kubectl 版本不匹配会导致异常错误
+apt-mark hold kubelet kubeadm kubectl
 
 nano ~/.zshrc
 # 添加 completion，最好放入 .zshrc 中
@@ -112,7 +128,17 @@ kubeadm join `replace this master IP`:6443 \
 ```
 
 ## install ingress-nginx
+
+[Official Tutorials](https://kubernetes.github.io/ingress-nginx/deploy/#quick-start)
 ```bash
-# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml
-wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml
+wget -c  https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.0/deploy/static/provider/cloud/deploy.yaml -O ingress-nginx.yaml
+# update port 80 and 443 or use default random port
+kubectl apply -f ingress-nginx.yaml
 ```
+
+## Q/A
+### helm install failed, how to fix it?
+View logs by running commands `kubectl -n ingress-nginx get events --sort-by='{.lastTimestamp}'`
+
+### 
+
